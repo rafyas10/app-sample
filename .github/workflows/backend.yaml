@@ -1,0 +1,28 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - backend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Deploy to Backend EC2 (via Frontend IP)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.FRONTEND_PUBLIC_IP }}
+          username: ec2-user
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Melakukan SSH ke Backend EC2 melalui Frontend IP
+            ssh ec2-user@${{ secrets.BACKEND_PRIVATE_IP }} <<EOF
+              cd /home/ec2-user/backend-api
+              git pull origin backend
+              pm2 restart app.js || node app.js &
+            EOF
