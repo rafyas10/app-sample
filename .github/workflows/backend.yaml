@@ -18,10 +18,10 @@ jobs:
         with:
           host: ${{ secrets.FRONTEND_PUBLIC_IP }}
           username: ec2-user
-          key: CC.pem
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Melakukan SSH ke Backend EC2 melalui Frontend IP
-            ssh ec2-user@${{ secrets.BACKEND_PRIVATE_IP }} <<EOF
+            ssh -i "CC.pem" ec2-user@10.0.2.29 <<EOF
               cd /home/ec2-user/backend-api
               git pull origin backend
               pm2 restart app.js || node app.js &
